@@ -5,17 +5,18 @@ TagManager:
   serializedVersion: 2
   tags:
   - Wall
+  - Ladder
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ladder
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - Tilemap
+  - Bot
+  - IgnoreTilemap
   - 
   - 
   - 

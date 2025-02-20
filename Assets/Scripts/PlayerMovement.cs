@@ -5,15 +5,16 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;
-    private Rigidbody2D rigidbody;
+    public float climbSpeed = 4.0f;
 
-    // Start is called before the first frame update
+    private Rigidbody2D rigidbody;
+    
+
     void Start()
     {
-        rigidbody =  this.gameObject.GetComponent<Rigidbody2D>();
+        rigidbody = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         PlayerMove();
@@ -21,16 +22,16 @@ public class PlayerMovement : MonoBehaviour
 
     private void PlayerMove()
     {
-        if (rigidbody != null)
-        {
-            // Lấy giá trị di chuyển từ bàn phím (phím A và D hoặc mũi tên trái/phải)
-            float moveInput = Input.GetAxis("Horizontal"); // "Horizontal" mặc định là phím A/D và mũi tên trái/phải
-
-            // Tính toán lực di chuyển
-            Vector3 moveDirection = new Vector2(moveInput, 0f);  // Di chuyển theo trục X
-
-            // Áp dụng lực cho Rigidbody
-            rigidbody.velocity = new Vector2(moveDirection.x * moveSpeed, rigidbody.velocity.y);
-        }
+        // Di chuyển nhân vật ngang
+        float moveInput = Input.GetAxis("Horizontal");
+        rigidbody.velocity = new Vector2(moveInput * moveSpeed, rigidbody.velocity.y);
     }
+
+    
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+
+    }
+
+    
 }
