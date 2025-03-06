@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 9163753784823944950}
   - component: {fileID: 2502931300994322963}
   - component: {fileID: 5352450200788509569}
+  - component: {fileID: 2906762026909993450}
   m_Layer: 8
   m_Name: bot
   m_TagString: Untagged
@@ -128,9 +129,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   checkPoint: {fileID: 8982913843845673023}
-  layer:
+  tilemapLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 128
   rayLength: 0.7
   moveSpeed: 1
 --- !u!61 &5352450200788509569
@@ -178,6 +179,27 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.8355803, y: 0.921062}
   m_EdgeRadius: 0
+--- !u!95 &2906762026909993450
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3200195843912395420}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 5bea349edc760454aafab52c74d1c40c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8982913843845673023
 GameObject:
   m_ObjectHideFlags: 0

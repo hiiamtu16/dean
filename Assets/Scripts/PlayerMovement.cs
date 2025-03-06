@@ -5,14 +5,18 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;
-    public float climbSpeed = 4.0f;
 
+    private bool isFacingRight = true;
+
+    private float direction;
     private Rigidbody2D rigidbody;
-    
+    private Animator anim;
+
 
     void Start()
     {
         rigidbody = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
     }
 
     void Update()
@@ -22,15 +26,24 @@ public class PlayerMovement : MonoBehaviour
 
     private void PlayerMove()
     {
-        // Di chuyển nhân vật ngang
-        float moveInput = Input.GetAxis("Horizontal");
-        rigidbody.velocity = new Vector2(moveInput * moveSpeed, rigidbody.velocity.y);
+        direction = Input.GetAxis("Horizontal");
+        rigidbody.velocity = new Vector2(direction * moveSpeed, rigidbody.velocity.y);
+
+        flip();
+
+        anim.SetFloat("move", Mathf.Abs(direction));
     }
 
-    
-    private void OnTriggerEnter2D(Collider2D other)
-    {
 
+    void flip()
+    {
+        if (isFacingRight && direction < 0 || !isFacingRight && direction > 0)
+        {
+            isFacingRight = !isFacingRight;
+            Vector3 size = transform.localScale;
+            size.x = size.x * -1;
+            transform.localScale = size;
+        }
     }
 
     

@@ -1,106 +1,74 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Tilemaps;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
-public class bot : MonoBehaviour
+public class Bot : MonoBehaviour
 {
-    public GameObject checkPoint;
-    public LayerMask layer;
-    public float rayLength = 0.9f;
+    [SerializeField] private GameObject checkPoint;
+    public LayerMask tilemapLayer; 
+    [SerializeField] private float rayLength = 0.9f;
+    [SerializeField] private float moveSpeed = 2f;
 
-    public float moveSpeed = 2f;
-    private bool isMovingRight = true;
+    private bool isFacingRight = true;
+    private float direction ; 
 
-    private SpriteRenderer spriteRenderer;
+    private Animator anim;
     private Rigidbody2D rigidbody;
-    private BoxCollider2D boxCollider;
-    // Start is called before the first frame update
+
     void Start()
     {
         rigidbody = GetComponent<Rigidbody2D>();
-        boxCollider = GetComponent<BoxCollider2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
 
-        isMovingRight = Random.Range(0, 2) == 0;
+        direction = UnityEngine.Random.Range(0, 2) * 2 - 1;
 
-     
-        MoveBot();
+        isFacingRight = direction == 1;
+        if (!isFacingRight) flip();
     }
 
-    // Update is called once per frame
     void Update()
     {
         MoveBot();
 
         checkObstacles();
-        
-    }
 
-    private void checkObstacles()
-    {
-        //raycart kiểm tra vị trí và quỹ đạo của bot
-        
-        
-            //lấy vị trí bắn
-            Transform checkPointPosition = checkPoint.transform;
-        Vector2 checkX = new Vector2(checkPointPosition.position.x, checkPointPosition.position.y);
-            //hướng tia ray phụ thuộc hướng di chuyển
-            Vector2 direction = isMovingRight ? Vector2.right : Vector2.left;
-             //bắn tia ray
-            RaycastHit2D hit = Physics2D.Raycast(checkX, direction, rayLength, layer);
-
-
-        //hiển thị ray trên screen
-        Debug.DrawRay(checkX, direction * rayLength, Color.red);
-
-
-        if (hit.collider != null )
-            {
-                isMovingRight = !isMovingRight;
-                Flip();
-            }
-        
+        UpdateRayDirection();
     }
 
     private void MoveBot()
     {
-        if (isMovingRight)
-        {
-            rigidbody.velocity = new Vector2(moveSpeed, rigidbody.velocity.y);
-        }
-        else
-        {
-            rigidbody.velocity = new Vector2(-moveSpeed, rigidbody.velocity.y);
-        }
+     
+        rigidbody.velocity = new Vector2(direction * moveSpeed, rigidbody.velocity.y);
+        anim.SetFloat("move", Mathf.Abs(direction));
     }
 
-  
-
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void flip()
     {
-        if (collision.gameObject.CompareTag("Wall"))
-        {
-            isMovingRight = !isMovingRight;
-
-            Flip();
-        }
+        isFacingRight = !isFacingRight;
+        Vector3 size = transform.localScale;
+        size.x *= -1;
+        transform.localScale = size;
     }
 
-    private void Flip()
+    private void checkObstacles()
     {
-        //lật sprite
-        spriteRenderer.flipX = !spriteRenderer.flipX;
+        Transform checkPointPosition = checkPoint.transform;
+        Vector2 checkX = new Vector2(checkPointPosition.position.x, checkPointPosition.position.y);
 
-        //lật offset
-        Vector2 currentoffset = boxCollider.offset;
-        currentoffset.x = -currentoffset.x;
-        boxCollider.offset = currentoffset;
+        Vector2 rayDirection = isFacingRight ? Vector2.right : Vector2.left;
+        RaycastHit2D hit = Physics2D.Raycast(checkX, rayDirection, rayLength, tilemapLayer);
 
-        //lật hướng bắt tia ray
-        Vector3 checkPointLocalPosition = checkPoint.transform.localPosition;
-        checkPointLocalPosition.x = -checkPointLocalPosition.x;
-        checkPoint.transform.localPosition = checkPointLocalPosition;
+        Debug.DrawRay(checkX, rayDirection * rayLength, Color.red);
 
+        if (hit.collider != null && hit.collider.GetComponent<Tilemap>() != null)
+        {
+            direction *= -1;
+            flip();
+        }
+    }
+    private void UpdateRayDirection()
+    {
+        isFacingRight = direction > 0; // Nếu direction > 0, bot quay phải, ngược lại quay trái
     }
 }
