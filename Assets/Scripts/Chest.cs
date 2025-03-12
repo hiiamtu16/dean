@@ -1,104 +1,87 @@
-﻿using System.Collections;
-using UnityEngine;
-using UnityEngine.UI;
+﻿    using System.Collections;
+    using UnityEngine;
+    using UnityEngine.UI;
 
-public class Chest : MonoBehaviour
-{
-    [SerializeField] private float openTime = 3f; // Thời gian giữ phím E để mở hòm
-    [SerializeField] private GameObject starPrefab; // Sao rơi ra khi mở hòm
-    [SerializeField] private Transform spawnPoint; // Vị trí spawn sao
-    [SerializeField] private GameObject pressEText; // UI hướng dẫn nhấn E
-    [SerializeField] private Image progressBar; // Thanh tiến trình mở hòm
+    public class Chest : MonoBehaviour
+    {
+        [SerializeField] private GameObject coinPrefab; 
+        [SerializeField] private Transform spawnPoint;
 
-    private bool isPlayerNearby = false;
-    private bool isOpening = false;
-    private float holdTime = 0f;
+        private bool isOpened = false;
+        private bool isPlayerNearby = false;
+        [SerializeField] private float holdTime = 3f;
+        private float holdTimer = 0f;
+
+        private Animator anim;
+
 
     private void Start()
-    {
-        pressEText.SetActive(false); // Ẩn UI ban đầu
-        progressBar.fillAmount = 0; // Thanh tiến trình trống
-    }
-
-    private void Update()
-    {
-        if (isPlayerNearby)
         {
-            if (Input.GetKeyDown(KeyCode.E))
+
+            anim = GetComponent<Animator>();
+            
+        }
+
+        private void Update()
+        {
+
+            if (isPlayerNearby && !isOpened)
             {
-                if (!isOpening)
+                if (Input.GetKey(KeyCode.E))
                 {
-                    isOpening = true;
-                    StartCoroutine(OpenChest());
+                    holdTimer += Time.deltaTime;
+
+                    
+
+                if (holdTimer >= holdTime)
+                    {
+                        OpenChest();
+                    }
+                }
+                else
+                {
+                    holdTimer = 0;
+                    
                 }
             }
-            else
+        }
+
+        private void OpenChest()
+        {
+            isOpened = true;
+            anim.SetBool("isOpened", true); 
+            SpawnCoin();
+
+           
+        }
+
+        private void SpawnCoin()
+        {
+            GameObject coin = Instantiate(coinPrefab, spawnPoint.position, Quaternion.identity);
+            Rigidbody2D rb = coin.GetComponent<Rigidbody2D>();
+
+            float randomXForce = Random.Range(-2f, 2f);
+            rb.AddForce(new Vector2(randomXForce, 6f), ForceMode2D.Impulse);
+        }
+
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.CompareTag("Player"))
             {
-                if (isOpening)
-                {
-                    StopOpening();
-                }
+                isPlayerNearby = true;
+                Debug.Log("Player đã chạm vào Chest!");
+            }
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (other.CompareTag("Player"))
+            {
+                Debug.Log("Player rời khỏi Chest!");
+                isPlayerNearby = false;
+                holdTimer = 0;
+               
             }
         }
     }
-
-    private IEnumerator OpenChest()
-    {
-        holdTime = 0f;
-
-        while (holdTime < openTime)
-        {
-            if (!Input.GetKey(KeyCode.E))
-            {
-                StopOpening();
-                yield break;
-            }
-
-            holdTime += Time.deltaTime;
-            progressBar.fillAmount = holdTime / openTime; // Cập nhật thanh tiến trình
-            yield return null;
-        }
-
-        Open();
-    }
-
-    private void StopOpening()
-    {
-        isOpening = false;
-        holdTime = 0;
-        progressBar.fillAmount = 0;
-    }
-
-    private void Open()
-    {
-        isOpening = false;
-        Debug.Log("Hòm đã mở!");
-
-        // Spawn sao
-        Instantiate(starPrefab, spawnPoint.position, Quaternion.identity);
-
-        // Vô hiệu hóa hòm
-        GetComponent<Collider2D>().enabled = false;
-        pressEText.SetActive(false);
-        gameObject.SetActive(false); // Ẩn hòm sau khi mở
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            isPlayerNearby = true;
-            pressEText.SetActive(true);
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            isPlayerNearby = false;
-            pressEText.SetActive(false);
-            StopOpening();
-        }
-    }
-}

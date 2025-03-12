@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Wall
   - Ladder
+  - Coin
+  - Chest
   layers:
   - Default
   - TransparentFX

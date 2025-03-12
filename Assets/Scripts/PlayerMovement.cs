@@ -8,14 +8,16 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isFacingRight = true;
 
+    public int coinCount = 0;
+
     private float direction;
-    private Rigidbody2D rigidbody;
+    private Rigidbody2D rb;
     private Animator anim;
 
 
     void Start()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
     }
 
@@ -27,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
     private void PlayerMove()
     {
         direction = Input.GetAxis("Horizontal");
-        rigidbody.velocity = new Vector2(direction * moveSpeed, rigidbody.velocity.y);
+        GetComponent<Rigidbody>().velocity = new Vector2(direction * moveSpeed, GetComponent<Rigidbody>().velocity.y);
 
         flip();
 
@@ -46,5 +48,21 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Coin"))
+        {
+            CollectCoin(other.gameObject);
+        }
+    }
+
+    private void CollectCoin(GameObject coin)
+    {
+        coinCount += 1; 
+        Destroy(coin); 
+        Debug.Log("Coins: " + coinCount);
+    }
+
+
 }
