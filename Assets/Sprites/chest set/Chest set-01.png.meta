@@ -97,85 +97,85 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ChestClose
+      name: Chest set-01_0
       rect:
         serializedVersion: 2
-        x: 1036
-        y: 4527
-        width: 2694
-        height: 2592
+        x: 0
+        y: 4167
+        width: 4167
+        height: 4167
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ce6393b3941ba6944ab4f6529ad5a624
-      internalID: -677146568
+      spriteID: d2a524105d469054c8a5b7adcd2f6273
+      internalID: 124379580
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ChestOpened
+      name: Chest set-01_1
       rect:
         serializedVersion: 2
-        x: 4649
-        y: 4518
-        width: 2694
-        height: 2592
+        x: 4167
+        y: 4167
+        width: 4167
+        height: 4167
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ded2416c1befe64438e706d102bd85aa
-      internalID: -824966081
+      spriteID: 4c88d127147f32343a8cf3228af115e0
+      internalID: -1842670526
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ChestOpeningMoney
+      name: Chest set-01_2
       rect:
         serializedVersion: 2
-        x: 991
-        y: 1215
-        width: 2694
-        height: 2595
+        x: 0
+        y: 0
+        width: 4167
+        height: 4167
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 13ff04cd97c5b5b4893170b1857c5aab
-      internalID: -1549151644
+      spriteID: 94c1376a14b46ea49863e677bb3f5483
+      internalID: -556623950
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ChestOpeningKey
+      name: Chest set-01_3
       rect:
         serializedVersion: 2
-        x: 4649
-        y: 1215
-        width: 2694
-        height: 2595
+        x: 4167
+        y: 0
+        width: 4167
+        height: 4167
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 60434f273f442aa4094515e76a4199b3
-      internalID: 1884569299
+      spriteID: 4765de92e9027b344b2d8683af1675eb
+      internalID: -1918273996
       vertices: []
       indices: 
       edges: []
@@ -191,10 +191,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      ChestClose: -677146568
-      ChestOpened: -824966081
-      ChestOpeningKey: 1884569299
-      ChestOpeningMoney: -1549151644
+      Chest set-01_0: 124379580
+      Chest set-01_1: -1842670526
+      Chest set-01_2: -556623950
+      Chest set-01_3: -1918273996
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

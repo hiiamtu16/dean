@@ -2,6 +2,7 @@
     using UnityEngine;
     using UnityEngine.UI;
 
+
     public class Chest : MonoBehaviour
     {
         [SerializeField] private GameObject coinPrefab; 
@@ -12,26 +13,39 @@
         [SerializeField] private float holdTime = 3f;
         private float holdTimer = 0f;
 
+        [SerializeField] private Slider progressBar;
+
+
         private Animator anim;
 
 
-    private void Start()
+        private void Start()
         {
 
             anim = GetComponent<Animator>();
-            
+            progressBar.gameObject.SetActive(false);
+            progressBar.value = 0;
+
         }
 
         private void Update()
         {
 
+            if (progressBar != null)
+            {
+            progressBar.transform.position = transform.position + new Vector3(0, 1.5f, 0);
+            }
+    
             if (isPlayerNearby && !isOpened)
             {
                 if (Input.GetKey(KeyCode.E))
                 {
                     holdTimer += Time.deltaTime;
 
-                    
+                    progressBar.gameObject.SetActive(true);
+                    progressBar.value = holdTimer / holdTime;
+
+
 
                 if (holdTimer >= holdTime)
                     {
@@ -41,7 +55,9 @@
                 else
                 {
                     holdTimer = 0;
-                    
+                    progressBar.value = 0;
+                    progressBar.gameObject.SetActive(false);
+
                 }
             }
         }
@@ -52,7 +68,7 @@
             anim.SetBool("isOpened", true); 
             SpawnCoin();
 
-           
+            progressBar.gameObject.SetActive(false);
         }
 
         private void SpawnCoin()
@@ -61,7 +77,7 @@
             Rigidbody2D rb = coin.GetComponent<Rigidbody2D>();
 
             float randomXForce = Random.Range(-2f, 2f);
-            rb.AddForce(new Vector2(randomXForce, 6f), ForceMode2D.Impulse);
+            rb.AddForce(new Vector2(randomXForce, 5f), ForceMode2D.Impulse);
         }
 
 

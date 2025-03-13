@@ -1,8 +1,8 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Coin : MonoBehaviour
+public class Key : MonoBehaviour
 {
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -11,7 +11,7 @@ public class Coin : MonoBehaviour
             PlayerMovement player = collision.collider.GetComponent<PlayerMovement>();
             if (player != null)
             {
-                player.coinCount += 1; 
+                player.keyCount += 1; 
                 Debug.Log("Coin Collected! Total Coins: " + player.coinCount);
                 Destroy(gameObject); 
             }

@@ -14,11 +14,11 @@ public class Bot : MonoBehaviour
     private float direction ; 
 
     private Animator anim;
-    private Rigidbody2D rigidbody;
+    private Rigidbody2D rb;
 
     void Start()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
 
         direction = UnityEngine.Random.Range(0, 2) * 2 - 1;
@@ -39,7 +39,7 @@ public class Bot : MonoBehaviour
     private void MoveBot()
     {
      
-        rigidbody.velocity = new Vector2(direction * moveSpeed, rigidbody.velocity.y);
+        rb.velocity = new Vector2(direction * moveSpeed, rb.velocity.y);
         anim.SetFloat("move", Mathf.Abs(direction));
     }
 
@@ -70,5 +70,14 @@ public class Bot : MonoBehaviour
     private void UpdateRayDirection()
     {
         isFacingRight = direction > 0; // Nếu direction > 0, bot quay phải, ngược lại quay trái
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Player va chạm với bot!");
+            //trừ máu
+        }
     }
 }
