@@ -6,13 +6,17 @@ using UnityEngine.UI;
 public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;
-    [SerializeField] private LayerMask tilemapLayer;
-    public Transform raycastOrigin;
-    public float rayLength ;
+    public float climbSpeed = 3f;
 
+    [SerializeField] private LayerMask tilemapLayer;
+    [SerializeField] private LayerMask ladderLayer;
+    public Transform raycastOrigin;
+    [SerializeField] private float rayLength;
 
     private bool isFacingRight = true;
     private bool isGrounded;
+    private bool isClimbing = false;
+    private bool onLadder = false;
 
     public int coinCount = 0;
     public int keyCount = 0;
@@ -22,10 +26,10 @@ public class PlayerMovement : MonoBehaviour
     private HealthUI healthUI;
 
     private float direction;
+    private float verticalInput;
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
-
 
     void Start()
     {
@@ -34,31 +38,40 @@ public class PlayerMovement : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         healthUI = FindObjectOfType<HealthUI>();
-
-        
-
-        
-
-        
     }
 
     void Update()
     {
         direction = Input.GetAxis("Horizontal");
+        verticalInput = Input.GetAxisRaw("Vertical");
+
+        CheckLadder(); 
+
+        if (onLadder && Mathf.Abs(verticalInput) > 0)
+        {
+            isClimbing = true;
+            rb.gravityScale = 0f;
+            gameObject.layer = LayerMask.NameToLayer("IgnoreTilemap");
+        }
     }
 
     private void FixedUpdate()
     {
         isGrounded = CheckGround();
-        PlayerMove();
+
+        if (isClimbing)
+        {
+            PlayerClimb();
+        }
+        else
+        {
+            PlayerMove();
+        }
     }
 
     private void PlayerMove()
     {
-        direction = Input.GetAxis("Horizontal");
-
-        if (!isGrounded)
-            direction = 0; // Ngăn di chuyển nếu không đứng trên nền hợp lệ
+        if (!isGrounded) direction = 0;
 
         rb.velocity = new Vector2(direction * moveSpeed, rb.velocity.y);
         flip();
@@ -66,19 +79,40 @@ public class PlayerMovement : MonoBehaviour
         anim.SetFloat("move", Mathf.Abs(direction));
     }
 
+    private void PlayerClimb()
+    {
+        rb.velocity = new Vector2(0, verticalInput * climbSpeed);
+
+        
+        if (!onLadder)
+        {
+            isClimbing = false;
+            rb.gravityScale = 1f;
+            gameObject.layer = LayerMask.NameToLayer("Player"); 
+        }
+
+        anim.SetFloat("climb", Mathf.Abs(verticalInput));
+    }
+
+
     public bool CheckGround()
     {
         RaycastHit2D hit = Physics2D.Raycast(raycastOrigin.position, Vector2.down, rayLength, tilemapLayer);
         Debug.DrawRay(raycastOrigin.position, Vector2.down * rayLength, Color.red);
 
-        if (hit.collider != null)
-        {
-            string hitLayerName = LayerMask.LayerToName(hit.collider.gameObject.layer);
-            return hitLayerName == "Tilemap" || hitLayerName == "IgnoreTilemap";
-        }
-        return false;
+        return hit.collider != null;
     }
 
+    private void CheckLadder()
+    {
+        RaycastHit2D hitUp = Physics2D.Raycast(raycastOrigin.position, Vector2.up, rayLength, ladderLayer);
+        RaycastHit2D hitDown = Physics2D.Raycast(raycastOrigin.position, Vector2.down, rayLength, ladderLayer);
+
+        Debug.DrawRay(raycastOrigin.position, Vector2.up * rayLength, Color.green);
+        Debug.DrawRay(raycastOrigin.position, Vector2.down * rayLength, Color.blue);
+
+        onLadder = hitUp.collider != null || hitDown.collider != null;
+    }
 
 
     void flip()
@@ -87,10 +121,22 @@ public class PlayerMovement : MonoBehaviour
         {
             isFacingRight = !isFacingRight;
             Vector3 size = transform.localScale;
-            size.x = size.x * -1;
+            size.x *= -1;
             transform.localScale = size;
         }
     }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Ladder"))
+        {
+            onLadder = false;
+            isClimbing = false;
+            rb.gravityScale = 1f;
+            gameObject.layer = LayerMask.NameToLayer("Player");
+        }
+    }
+
 
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -105,7 +151,7 @@ public class PlayerMovement : MonoBehaviour
             CollectKey(other.gameObject);
         }
 
-        else if (other.CompareTag("Bot")) 
+        else if (other.CompareTag("Bot"))
         {
             TakeDamage(1);
         }
@@ -113,12 +159,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void CollectCoin(GameObject coin)
     {
-        coinCount += 1; 
-        Destroy(coin); 
+        coinCount += 1;
+        Destroy(coin);
         Debug.Log("Coins: " + coinCount);
     }
 
-    private void CollectKey(GameObject key) 
+    private void CollectKey(GameObject key)
     {
         keyCount += 1;
         Destroy(key);
@@ -130,7 +176,7 @@ public class PlayerMovement : MonoBehaviour
         health -= damage;
         health = Mathf.Clamp(health, 0, maxHealth);
 
-        // Cập nhật UI trái tim
+        
         if (healthUI != null)
         {
             healthUI.UpdateHearts(health);
@@ -149,6 +195,5 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log("Player đã chết!");
         //out màn
     }
-
 
 }

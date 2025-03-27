@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 674858799879398761}
   - component: {fileID: 3777584972381564752}
   - component: {fileID: 8553549765476467555}
-  - component: {fileID: 4217694795227216319}
   - component: {fileID: 4353231824178042738}
   - component: {fileID: 7054501278290413515}
   m_Layer: 0
@@ -163,22 +162,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.7055073, y: 0.77176857}
   m_EdgeRadius: 0
---- !u!114 &4217694795227216319
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1169208095645505341}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f081d2083e3c4b341a955f68abdbe598, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  climbSpeed: 3
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!114 &4353231824178042738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,9 +175,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 3
+  climbSpeed: 3
   tilemapLayer:
     serializedVersion: 2
     m_Bits: 640
+  ladderLayer:
+    serializedVersion: 2
+    m_Bits: 0
   raycastOrigin: {fileID: 0}
   rayLength: 0.5
   coinCount: 0

@@ -10,6 +10,9 @@ public class Bot : MonoBehaviour
     [SerializeField] private float rayLength = 0.9f;
     [SerializeField] private float moveSpeed = 2f;
 
+    [SerializeField] private float attackCooldown ;
+    private bool isAttacking = false;
+
     private bool isFacingRight = true;
     private float direction ; 
 
@@ -36,12 +39,14 @@ public class Bot : MonoBehaviour
         UpdateRayDirection();
     }
 
-    private void MoveBot()
-    {
-     
-        rb.velocity = new Vector2(direction * moveSpeed, rb.velocity.y);
-        anim.SetFloat("move", Mathf.Abs(direction));
-    }
+        private void MoveBot()
+        {
+        if (!isAttacking) // Chỉ di chuyển khi không tấn công
+            {
+            rb.velocity = new Vector2(direction * moveSpeed, rb.velocity.y);
+            anim.SetFloat("move", Mathf.Abs(direction));
+            }
+        }
 
     private void flip()
     {
@@ -74,10 +79,25 @@ public class Bot : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if(other.CompareTag("Player") && !isAttacking)
         {
-            Debug.Log("Player va chạm với bot!");
-            //trừ máu
+            isAttacking = true;
+            anim.SetBool("Attacking", true);
+            rb.velocity = Vector2.zero;
+
+            
+            StartCoroutine(AttackCooldown());
         }
     }
+
+    private IEnumerator AttackCooldown()
+    {
+        yield return new WaitForSeconds(attackCooldown);
+
+        isAttacking = false;
+        anim.SetBool("Attacking", false); // Quay lại animation chạy
+    }
+
+
+
 }
