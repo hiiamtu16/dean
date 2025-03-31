@@ -5,28 +5,32 @@ using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Di chuyển & leo thang")]
     public float moveSpeed = 5f;
     public float climbSpeed = 3f;
+    private float direction;
+    private float verticalInput;
 
+    [Header("Kiểm tra mặt đất & thang")]
     [SerializeField] private LayerMask tilemapLayer;
     [SerializeField] private LayerMask ladderLayer;
-    public Transform raycastOrigin;
-    [SerializeField] private float rayLength;
+    [SerializeField] private Transform raycastOrigin;
+    [SerializeField] private float rayLength = 0.5f;
 
     private bool isFacingRight = true;
-    private bool isGrounded;
+    private bool isGrounded = false;
     private bool isClimbing = false;
     private bool onLadder = false;
 
-    public int coinCount = 0;
-    public int keyCount = 0;
-
+    [Header("Máu & UI")]
     public int health = 3;
     private int maxHealth = 3;
     private HealthUI healthUI;
 
-    private float direction;
-    private float verticalInput;
+    [Header("Thu thập vật phẩm")]
+    public int coinCount = 0;
+    public int keyCount = 0;
+
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
@@ -36,8 +40,9 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-
         healthUI = FindObjectOfType<HealthUI>();
+
+        UpdateHealthUI();
     }
 
     void Update()
@@ -45,20 +50,21 @@ public class PlayerMovement : MonoBehaviour
         direction = Input.GetAxis("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
-        CheckLadder(); 
+        isGrounded = CheckGround();
+        CheckLadder();
 
         if (onLadder && Mathf.Abs(verticalInput) > 0)
         {
-            isClimbing = true;
-            rb.gravityScale = 0f;
-            gameObject.layer = LayerMask.NameToLayer("IgnoreTilemap");
+            StartClimbing();
+        }
+        else if (!onLadder)
+        {
+            StopClimbing();
         }
     }
 
     private void FixedUpdate()
     {
-        isGrounded = CheckGround();
-
         if (isClimbing)
         {
             PlayerClimb();
@@ -71,35 +77,21 @@ public class PlayerMovement : MonoBehaviour
 
     private void PlayerMove()
     {
-        if (!isGrounded) direction = 0;
-
         rb.velocity = new Vector2(direction * moveSpeed, rb.velocity.y);
         flip();
-
         anim.SetFloat("move", Mathf.Abs(direction));
     }
 
     private void PlayerClimb()
     {
         rb.velocity = new Vector2(0, verticalInput * climbSpeed);
-
-        
-        if (!onLadder)
-        {
-            isClimbing = false;
-            rb.gravityScale = 1f;
-            gameObject.layer = LayerMask.NameToLayer("Player"); 
-        }
-
         anim.SetFloat("climb", Mathf.Abs(verticalInput));
     }
 
-
-    public bool CheckGround()
+    private bool CheckGround()
     {
         RaycastHit2D hit = Physics2D.Raycast(raycastOrigin.position, Vector2.down, rayLength, tilemapLayer);
         Debug.DrawRay(raycastOrigin.position, Vector2.down * rayLength, Color.red);
-
         return hit.collider != null;
     }
 
@@ -114,30 +106,28 @@ public class PlayerMovement : MonoBehaviour
         onLadder = hitUp.collider != null || hitDown.collider != null;
     }
 
-
-    void flip()
+    private void StartClimbing()
     {
-        if (isFacingRight && direction < 0 || !isFacingRight && direction > 0)
+        isClimbing = true;
+        rb.gravityScale = 0f;
+        gameObject.layer = LayerMask.NameToLayer("IgnoreTilemap");
+    }
+
+    private void StopClimbing()
+    {
+        isClimbing = false;
+        rb.gravityScale = 1f;
+        gameObject.layer = LayerMask.NameToLayer("Player");
+    }
+
+    private void flip()
+    {
+        if ((isFacingRight && direction < 0) || (!isFacingRight && direction > 0))
         {
             isFacingRight = !isFacingRight;
-            Vector3 size = transform.localScale;
-            size.x *= -1;
-            transform.localScale = size;
+            transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
         }
     }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Ladder"))
-        {
-            onLadder = false;
-            isClimbing = false;
-            rb.gravityScale = 1f;
-            gameObject.layer = LayerMask.NameToLayer("Player");
-        }
-    }
-
-
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -145,43 +135,42 @@ public class PlayerMovement : MonoBehaviour
         {
             CollectCoin(other.gameObject);
         }
-
         else if (other.CompareTag("Key"))
         {
             CollectKey(other.gameObject);
         }
-
         else if (other.CompareTag("Bot"))
         {
             TakeDamage(1);
         }
     }
 
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Ladder"))
+        {
+            StopClimbing();
+        }
+    }
+
     private void CollectCoin(GameObject coin)
     {
-        coinCount += 1;
+        coinCount++;
         Destroy(coin);
         Debug.Log("Coins: " + coinCount);
     }
 
     private void CollectKey(GameObject key)
     {
-        keyCount += 1;
+        keyCount++;
         Destroy(key);
         Debug.Log("Key: " + keyCount);
     }
 
-    private void TakeDamage(int damage)
+    public void TakeDamage(int damage)
     {
-        health -= damage;
-        health = Mathf.Clamp(health, 0, maxHealth);
-
-        
-        if (healthUI != null)
-        {
-            healthUI.UpdateHearts(health);
-        }
-
+        health = Mathf.Clamp(health - damage, 0, maxHealth);
+        UpdateHealthUI();
         Debug.Log("Player bị tấn công! Máu còn: " + health);
 
         if (health <= 0)
@@ -190,10 +179,17 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void UpdateHealthUI()
+    {
+        if (healthUI != null)
+        {
+            healthUI.UpdateHearts(health);
+        }
+    }
+
     private void Die()
     {
         Debug.Log("Player đã chết!");
-        //out màn
+        // Implement chết game ở đây (ví dụ: load lại scene)
     }
-
 }

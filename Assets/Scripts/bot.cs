@@ -6,15 +6,18 @@ using UnityEngine.Tilemaps;
 public class Bot : MonoBehaviour
 {
     [SerializeField] private GameObject checkPoint;
-    public LayerMask tilemapLayer; 
+    public LayerMask tilemapLayer;
     [SerializeField] private float rayLength = 0.9f;
     [SerializeField] private float moveSpeed = 2f;
 
-    [SerializeField] private float attackCooldown ;
+    [SerializeField] private float attackRayLength = 1.5f;
+    [SerializeField] private float attackRate = 1f;
     private bool isAttacking = false;
+    private bool isTurning = false; // Biến kiểm soát trạng thái quay đầu
+    public float flipHoldTime;
 
     private bool isFacingRight = true;
-    private float direction ; 
+    private float direction;
 
     private Animator anim;
     private Rigidbody2D rb;
@@ -25,28 +28,26 @@ public class Bot : MonoBehaviour
         anim = GetComponent<Animator>();
 
         direction = UnityEngine.Random.Range(0, 2) * 2 - 1;
-
         isFacingRight = direction == 1;
         if (!isFacingRight) flip();
     }
 
     void Update()
     {
-        MoveBot();
-
+        if (!isTurning) MoveBot();
         checkObstacles();
-
         UpdateRayDirection();
+        AttackRaycast();
     }
 
-        private void MoveBot()
+    private void MoveBot()
+    {
+        if (!isAttacking && !isTurning) // Chỉ di chuyển khi không tấn công hoặc quay đầu
         {
-        if (!isAttacking) // Chỉ di chuyển khi không tấn công
-            {
             rb.velocity = new Vector2(direction * moveSpeed, rb.velocity.y);
             anim.SetFloat("move", Mathf.Abs(direction));
-            }
         }
+    }
 
     private void flip()
     {
@@ -58,46 +59,79 @@ public class Bot : MonoBehaviour
 
     private void checkObstacles()
     {
+        if (isTurning) return;
+
         Transform checkPointPosition = checkPoint.transform;
         Vector2 checkX = new Vector2(checkPointPosition.position.x, checkPointPosition.position.y);
-
         Vector2 rayDirection = isFacingRight ? Vector2.right : Vector2.left;
-        RaycastHit2D hit = Physics2D.Raycast(checkX, rayDirection, rayLength, tilemapLayer);
 
+        RaycastHit2D hit = Physics2D.Raycast(checkX, rayDirection, rayLength, tilemapLayer);
         Debug.DrawRay(checkX, rayDirection * rayLength, Color.red);
 
         if (hit.collider != null && hit.collider.GetComponent<Tilemap>() != null)
         {
-            direction *= -1;
-            flip();
+            StartCoroutine(TurnIdle());
         }
     }
+
+    private IEnumerator TurnIdle()
+    {
+        isTurning = true;
+        anim.SetBool("Idle", true); // Chuyển sang animation idle
+        rb.velocity = Vector2.zero; // Dừng di chuyển
+
+        yield return new WaitForSeconds(flipHoldTime); // Thời gian đứng yên trước khi quay đầu
+
+        direction *= -1;
+        flip();
+
+        anim.SetBool("Idle", false);
+        isTurning = false;
+    }
+
     private void UpdateRayDirection()
     {
-        isFacingRight = direction > 0; // Nếu direction > 0, bot quay phải, ngược lại quay trái
+        isFacingRight = direction > 0;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void AttackRaycast()
     {
-        if(other.CompareTag("Player") && !isAttacking)
-        {
-            isAttacking = true;
-            anim.SetBool("Attacking", true);
-            rb.velocity = Vector2.zero;
+        if (isAttacking) return; // Nếu đang tấn công thì không bắn tiếp
 
-            
-            StartCoroutine(AttackCooldown());
+        Vector2 origin = transform.position;
+        Vector2 directionRay = isFacingRight ? Vector2.right : Vector2.left;
+
+        // Kiểm tra xem có vật cản tilemap giữa bot và player hay không
+        RaycastHit2D hitTile = Physics2D.Raycast(origin, directionRay, attackRayLength, tilemapLayer);
+        RaycastHit2D hitPlayer = Physics2D.Raycast(origin, directionRay, attackRayLength, LayerMask.GetMask("Player"));
+
+        Debug.DrawRay(origin, directionRay * attackRayLength, Color.blue); // Vẽ ray kiểm tra
+
+        if (hitPlayer.collider != null && hitPlayer.collider.CompareTag("Player"))
+        {
+            // Nếu không có tilemap cản hoặc tilemap nằm sau player thì bot mới gây sát thương
+            if (hitTile.collider == null || hitTile.distance > hitPlayer.distance)
+            {
+                PlayerMovement player = hitPlayer.collider.GetComponent<PlayerMovement>();
+                if (player != null)
+                {
+                    player.TakeDamage(1);
+                    StartCoroutine(AttackCooldown());
+                }
+            }
         }
     }
+
 
     private IEnumerator AttackCooldown()
     {
-        yield return new WaitForSeconds(attackCooldown);
+        isAttacking = true;
+        anim.SetBool("Attacking", true);
+        rb.velocity = Vector2.zero;
+
+        yield return new WaitForSeconds(attackRate);
 
         isAttacking = false;
-        anim.SetBool("Attacking", false); // Quay lại animation chạy
+        anim.SetBool("Attacking", false);
     }
-
-
-
 }
