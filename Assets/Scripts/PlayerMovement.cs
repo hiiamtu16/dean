@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -35,6 +36,17 @@ public class PlayerMovement : MonoBehaviour
     private Animator anim;
     private SpriteRenderer spriteRenderer;
 
+    [Header("Sao")]
+    public Stars starUI; 
+    public int star = 3;
+    public GameObject WinPanel;
+    public GameObject LosePanel;
+
+
+    private Door door;
+
+
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -43,6 +55,10 @@ public class PlayerMovement : MonoBehaviour
         healthUI = FindObjectOfType<HealthUI>();
 
         UpdateHealthUI();
+        if (WinPanel != null) WinPanel.SetActive(false);
+        if (LosePanel != null) LosePanel.SetActive(false);
+
+        door = FindObjectOfType<Door>();
     }
 
     void Update()
@@ -85,7 +101,7 @@ public class PlayerMovement : MonoBehaviour
     private void PlayerClimb()
     {
         rb.velocity = new Vector2(0, verticalInput * climbSpeed);
-        anim.SetFloat("climb", Mathf.Abs(verticalInput));
+
     }
 
     private bool CheckGround()
@@ -143,7 +159,23 @@ public class PlayerMovement : MonoBehaviour
         {
             TakeDamage(1);
         }
+        else if (other.CompareTag("Door"))
+        {
+            Door door = other.GetComponent<Door>();
+            if (door != null && keyCount >= 1)
+            {
+                door.Open(); 
+                WinGame();   
+            }
+            else
+            {
+                Debug.Log("Cần chìa khóa để mở cửa!");
+            }
+        }
     }
+
+
+
 
     private void OnTriggerExit2D(Collider2D other)
     {
@@ -165,6 +197,12 @@ public class PlayerMovement : MonoBehaviour
         keyCount++;
         Destroy(key);
         Debug.Log("Key: " + keyCount);
+
+        // Mở cửa ngay sau khi nhặt được khóa
+        if (door != null)
+        {
+            door.Open();  // Gọi hàm mở cửa
+        }
     }
 
     public void TakeDamage(int damage)
@@ -176,6 +214,7 @@ public class PlayerMovement : MonoBehaviour
         if (health <= 0)
         {
             Die();
+            
         }
     }
 
@@ -189,7 +228,34 @@ public class PlayerMovement : MonoBehaviour
 
     private void Die()
     {
-        Debug.Log("Player đã chết!");
-        // Implement chết game ở đây (ví dụ: load lại scene)
+        Debug.Log("Người chơi đã chết!");
+
+        if (LosePanel != null)
+        {
+            LosePanel.SetActive(true);
+        }
+        
+        Time.timeScale = 0f;
     }
+
+
+    public void WinGame()
+    {
+        Debug.Log("Người chơi đã chiến thắng!");
+
+        if (WinPanel != null)
+        {
+            WinPanel.SetActive(true);
+        }
+        
+        int starEarned = health; 
+        if (starUI != null)
+        {
+            starUI.UpdateStars(starEarned);
+        }
+       
+        Time.timeScale = 0f;
+    }
+
+
 }

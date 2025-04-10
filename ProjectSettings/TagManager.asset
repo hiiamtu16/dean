@@ -11,6 +11,8 @@ TagManager:
   - Key
   - Bot
   - Tilemap
+  - Door
+  - OpenedDoor
   layers:
   - Default
   - TransparentFX
@@ -25,7 +27,7 @@ TagManager:
   - Coin
   - Key
   - moveBot
-  - 
+  - Door
   - 
   - 
   - 
