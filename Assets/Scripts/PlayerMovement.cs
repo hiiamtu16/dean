@@ -34,7 +34,6 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator anim;
-    private SpriteRenderer spriteRenderer;
 
     [Header("Sao")]
     public Stars starUI; 
@@ -51,7 +50,6 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
         healthUI = FindObjectOfType<HealthUI>();
 
         UpdateHealthUI();
