@@ -6,14 +6,13 @@ public class Coin : MonoBehaviour
 {
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.collider.CompareTag("Player")) 
+        if (collision.collider.CompareTag("Player"))
         {
-            PlayerMovement player = collision.collider.GetComponent<PlayerMovement>();
-            if (player != null)
+            GameController gameController = FindObjectOfType<GameController>();
+            if (gameController != null)
             {
-                player.coinCount += 1; 
-                Debug.Log("Coin Collected! Total Coins: " + player.coinCount);
-                Destroy(gameObject); 
+                gameController.AddCoin(); // Gọi hàm cộng coin
+                Destroy(gameObject);
             }
         }
     }
