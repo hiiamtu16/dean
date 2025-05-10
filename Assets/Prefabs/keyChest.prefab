@@ -532,7 +532,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   keyPrefab: {fileID: 4889162993472387521, guid: af8b677d8cd751b449825b9c5e80fcf3, type: 3}
   spawnKey: {fileID: 8860987178640706857}
-  holdTime: 3
+  holdTime: 2
   progressBar: {fileID: 4535849051129266065}
 --- !u!61 &5342435684858257364
 BoxCollider2D:

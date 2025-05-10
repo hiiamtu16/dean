@@ -325,7 +325,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   coinPrefab: {fileID: 7580552376727320519, guid: b20b49d82067d364baec4e6de557c0ae, type: 3}
   spawnPoint: {fileID: 323315983088442094}
-  holdTime: 3
+  holdTime: 2
   progressBar: {fileID: 3681504564106708835}
 --- !u!1 &2519469872661638491
 GameObject:
