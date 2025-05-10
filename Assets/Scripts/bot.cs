@@ -8,12 +8,12 @@ public class Bot : MonoBehaviour
     [SerializeField] private GameObject checkPoint;
     public LayerMask tilemapLayer;
     [SerializeField] private float rayLength = 0.9f;
-    [SerializeField] private float moveSpeed = 2f;
+    [SerializeField] private float moveSpeed = 1.8f;
 
     [SerializeField] private float attackRayLength = 1.5f;
     [SerializeField] private float attackRate = 1f;
     private bool isAttacking = false;
-    private bool isTurning = false; // Biến kiểm soát trạng thái quay đầu
+    private bool isTurning = false;
     public float flipHoldTime;
 
     private bool isFacingRight = true;
@@ -42,7 +42,7 @@ public class Bot : MonoBehaviour
 
     private void MoveBot()
     {
-        if (!isAttacking && !isTurning) // Chỉ di chuyển khi không tấn công hoặc quay đầu
+        if (!isAttacking && !isTurning)
         {
             rb.velocity = new Vector2(direction * moveSpeed, rb.velocity.y);
             anim.SetFloat("move", Mathf.Abs(direction));
@@ -77,10 +77,10 @@ public class Bot : MonoBehaviour
     private IEnumerator TurnIdle()
     {
         isTurning = true;
-        anim.SetBool("Idle", true); // Chuyển sang animation idle
-        rb.velocity = Vector2.zero; // Dừng di chuyển
+        anim.SetBool("Idle", true);
+        rb.velocity = Vector2.zero;
 
-        yield return new WaitForSeconds(flipHoldTime); // Thời gian đứng yên trước khi quay đầu
+        yield return new WaitForSeconds(flipHoldTime);
 
         direction *= -1;
         flip();
@@ -96,32 +96,30 @@ public class Bot : MonoBehaviour
 
     private void AttackRaycast()
     {
-        if (isAttacking) return; // Nếu đang tấn công thì không bắn tiếp
+        if (isAttacking) return;
 
         Vector2 origin = transform.position;
         Vector2 directionRay = isFacingRight ? Vector2.right : Vector2.left;
 
-        // Kiểm tra xem có vật cản tilemap giữa bot và player hay không
         RaycastHit2D hitTile = Physics2D.Raycast(origin, directionRay, attackRayLength, tilemapLayer);
         RaycastHit2D hitPlayer = Physics2D.Raycast(origin, directionRay, attackRayLength, LayerMask.GetMask("Player"));
 
-        Debug.DrawRay(origin, directionRay * attackRayLength, Color.blue); // Vẽ ray kiểm tra
+        Debug.DrawRay(origin, directionRay * attackRayLength, Color.blue);
 
         if (hitPlayer.collider != null && hitPlayer.collider.CompareTag("Player"))
         {
-            // Nếu không có tilemap cản hoặc tilemap nằm sau player thì bot mới gây sát thương
             if (hitTile.collider == null || hitTile.distance > hitPlayer.distance)
             {
-                PlayerMovement player = hitPlayer.collider.GetComponent<PlayerMovement>();
-                if (player != null)
+                
+                GameController gameController = FindObjectOfType<GameController>();
+                if (gameController != null)
                 {
-                    player.TakeDamage(1);
+                    gameController.TakeDamage(1);
                     StartCoroutine(AttackCooldown());
                 }
             }
         }
     }
-
 
     private IEnumerator AttackCooldown()
     {

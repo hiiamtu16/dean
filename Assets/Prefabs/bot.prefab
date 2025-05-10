@@ -134,10 +134,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   rayLength: 0.7
-  moveSpeed: 1
+  moveSpeed: 0.8
   attackRayLength: 2.5
   attackRate: 2
-  flipHoldTime: 1.5
+  flipHoldTime: 3
 --- !u!95 &2906762026909993450
 Animator:
   serializedVersion: 5

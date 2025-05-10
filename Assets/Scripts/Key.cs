@@ -8,13 +8,8 @@ public class Key : MonoBehaviour
     {
         if (collision.collider.CompareTag("Player"))
         {
-            PlayerMovement player = collision.collider.GetComponent<PlayerMovement>();
-            if (player != null)
-            {
-                player.keyCount += 1;
-                Debug.Log(" Key Collected! Total Keys: " + player.keyCount); 
-                Destroy(gameObject);
-            }
+            GameController.Instance.AddKey();
+            Destroy(gameObject);
         }
     }
 
