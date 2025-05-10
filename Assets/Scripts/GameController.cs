@@ -68,7 +68,7 @@ public class GameController : MonoBehaviour
         {
             TakeDamage(1);  
         }
-        else if (other.CompareTag("Door"))
+        else if (other.CompareTag("OpenedDoor"))
         {
             if (keyCount >= 1)
             {
