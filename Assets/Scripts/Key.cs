@@ -8,12 +8,8 @@ public class Key : MonoBehaviour
     {
         if (collision.collider.CompareTag("Player"))
         {
-            GameController gameController = FindObjectOfType<GameController>();
-            if (gameController != null)
-            {
-                gameController.AddKey(); 
-                Destroy(gameObject);
-            }
+            GameController.Instance.AddKey();
+            Destroy(gameObject);
         }
     }
 

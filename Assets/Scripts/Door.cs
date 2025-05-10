@@ -1,30 +1,59 @@
-﻿    using UnityEngine;
+﻿using Unity.VisualScripting;
+using UnityEngine;
 
 
-    public class Door : MonoBehaviour
+public class Door : MonoBehaviour
+{
+    private static Door instance;
+    public static Door Instance => instance;
+
+    private void Awake()
     {
-        private Animator animator;
-        private bool isOpened = false;
-
-        void Start()
+        if(instance == null)
         {
-            animator = GetComponent<Animator>();
-            animator.enabled = false; 
+            instance = this;
+            return;
         }
 
-        public void Open()
+        if (instance.gameObject.GetInstanceID() != this.gameObject.GetInstanceID())
         {
-            if (!isOpened) 
-            {
-                isOpened = true;
-                gameObject.tag = "OpenedDoor"; 
-                if (animator != null)
-                {
-                    animator.SetBool("HaveKey", true); 
-                }
-                Debug.Log("Cửa đã mở!");
-            }
+            Destroy(this.gameObject);
         }
-
     
+        
     }
+
+
+
+
+
+    private Animator animator;
+    private bool isOpened = false;
+
+    void Start()
+    {
+        animator = GetComponent<Animator>();
+    }
+
+
+
+    public void Open()
+    {
+        Debug.Log("Goi ham Open Door");
+        if (!isOpened)
+        {
+            isOpened = true;
+            gameObject.tag = "OpenedDoor";
+
+            if (animator != null)
+            {
+                animator.SetBool("HaveKey", true);
+                Debug.Log("Da havekey xong");
+            }
+
+            Debug.Log("Cửa đã mở!");
+        }
+    }
+
+
+}

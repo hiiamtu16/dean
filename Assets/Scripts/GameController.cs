@@ -2,6 +2,9 @@
 
 public class GameController : MonoBehaviour
 {
+    private static GameController instance;
+    public static GameController Instance => instance;
+
     [Header("Máu & UI")]
     public int health = 3;
     private int maxHealth = 3;
@@ -17,6 +20,19 @@ public class GameController : MonoBehaviour
     public int keyCount = 0;
 
     private Door door;
+
+    private void Awake()
+    {
+        if(instance == null)
+        {
+            instance = this;
+            return;
+        }
+        if(instance.gameObject.GetInstanceID() != this.gameObject.GetInstanceID())
+        {
+            Destroy(this.gameObject);
+        }
+    }
 
     void Start()
     {
@@ -41,6 +57,7 @@ public class GameController : MonoBehaviour
         else if (other.CompareTag("Key"))
         {
             keyCount++;
+
             Destroy(other.gameObject);
             Debug.Log("Keys: " + keyCount);
 
@@ -55,13 +72,14 @@ public class GameController : MonoBehaviour
         {
             if (keyCount >= 1)
             {
-                other.GetComponent<Door>()?.Open();
                 WinGame();
+
             }
             else
             {
                 Debug.Log("Cần chìa khóa để mở cửa!");
             }
+            
         }
     }
 
@@ -129,5 +147,7 @@ public class GameController : MonoBehaviour
     {
         keyCount++;
         Debug.Log("Key: " + keyCount);
+        Door.Instance.Open();
+
     }
 }
