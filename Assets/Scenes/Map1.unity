@@ -847,11 +847,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2817699985911322558, guid: 58fbbe3dfe36a5345b66711da7427c20, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.53
+      value: -7.86
       objectReference: {fileID: 0}
     - target: {fileID: 2817699985911322558, guid: 58fbbe3dfe36a5345b66711da7427c20, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.08
+      value: 4.16
       objectReference: {fileID: 0}
     - target: {fileID: 2817699985911322558, guid: 58fbbe3dfe36a5345b66711da7427c20, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3517,11 +3517,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3680711516045703360, guid: 394fd3410d1272445a730c970e6581af, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12.81
+      value: -1.78
       objectReference: {fileID: 0}
     - target: {fileID: 3680711516045703360, guid: 394fd3410d1272445a730c970e6581af, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -4.9
+      value: -2.45
       objectReference: {fileID: 0}
     - target: {fileID: 3680711516045703360, guid: 394fd3410d1272445a730c970e6581af, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6448,7 +6448,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1806087034738359657, guid: 869f0410d83a3014f9ba1f9ed065e888, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.4636524
+      value: 2.67
       objectReference: {fileID: 0}
     - target: {fileID: 1806087034738359657, guid: 869f0410d83a3014f9ba1f9ed065e888, type: 3}
       propertyPath: m_LocalPosition.y
@@ -6709,6 +6709,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2105976472}
     m_Modifications:
+    - target: {fileID: 2502931300994322963, guid: dbb146174c9a76c418f7445e3e5de9f9, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2502931300994322963, guid: dbb146174c9a76c418f7445e3e5de9f9, type: 3}
       propertyPath: attackCooldown
       value: 3

@@ -8,7 +8,7 @@ public class Bot : MonoBehaviour
     [SerializeField] private GameObject checkPoint;
     public LayerMask tilemapLayer;
     [SerializeField] private float rayLength = 0.9f;
-    [SerializeField] private float moveSpeed = 2f;
+    [SerializeField] private float moveSpeed = 1.8f;
 
     [SerializeField] private float attackRayLength = 1.5f;
     [SerializeField] private float attackRate = 1f;
